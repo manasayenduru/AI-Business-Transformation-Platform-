@@ -1,5 +1,7 @@
-streamlit
-google-generativeai
-python-dotenv
-plotly
-reportlab
+streamlit>=1.46.0
+google-generativeai>=0.8.5
+python-dotenv>=1.0.1
+pandas>=2.2.2
+plotly>=5.24.1
+reportlab>=4.2.2
+annotated-types>=0.7.0
