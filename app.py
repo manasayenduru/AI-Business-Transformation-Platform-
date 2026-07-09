@@ -1,5 +1,4 @@
 import os
-from annotated_types import doc
 from reportlab.lib import styles
 import streamlit as st
 import google.generativeai as genai
