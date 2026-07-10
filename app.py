@@ -414,90 +414,109 @@ Give a concise executive-style recommendation.
 """
 
         with st.spinner("Generating AI consulting report..."):
+            model_name = "gemini-3.5-flash"
+
             url = (
                 "https://generativelanguage.googleapis.com/v1beta/"
-                "models/gemini-2.5-flash:generateContent"
-    )
+                f"models/{model_name}:generateContent"
+            )
 
-    api_response = requests.post(
-        url,
-        headers={
-            "x-goog-api-key": api_key,
-            "Content-Type": "application/json",
-    },
-    json={
-         "contents": [
-         {
-              "parts": [
-                 {"text": prompt}
-               ]
-         }
-         ]
-        },
-        timeout=120,
-    )
+            api_response = requests.post(
+                url,
+                headers={
+                    "x-goog-api-key": api_key,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "contents": [
+                        {
+                            "parts": [
+                                {"text": prompt}
+                            ]
+                        }
+                    ]
+                },
+                timeout=120,
+            )
 
-    api_response.raise_for_status()
-    result = api_response.json()
+            if not api_response.ok:
+                st.error(
+                    f"Gemini API error {api_response.status_code}: "
+                    f"{api_response.text}"
+                )
+                st.stop()
 
-    response_text = result["candidates"][0]["content"]["parts"][0]["text"]
+            result = api_response.json()
 
-    st.success("AI consulting report generated successfully.")
-    st.markdown(response_text)
-    pdf_file = create_pdf(
+            try:
+                response_text = (
+                    result["candidates"][0]["content"]["parts"][0]["text"]
+                )
+            except (KeyError, IndexError, TypeError):
+                st.error("Gemini returned an unexpected response.")
+                st.json(result)
+                st.stop()
+
+        st.success("AI consulting report generated successfully.")
+        st.markdown(response_text)
+
+        pdf_file = create_pdf(
             response_text,
             readiness_score,
             estimated_roi,
             estimated_savings,
             timeline
         )
-    with open(pdf_file, "rb") as pdf:
+
+        with open(pdf_file, "rb") as pdf:
             st.download_button(
                 label="📄 Download Executive PDF Report",
                 data=pdf.read(),
                 file_name="AI_Consulting_Report.pdf",
                 mime="application/pdf"
             )
-            gauge = go.Figure(
-            go.Indicator(
-            mode="gauge+number",
-            value=readiness_score,
-            title={"text": "AI Readiness Score"},
-            gauge={
-            "axis": {"range": [0, 100]},
-            "bar": {"color": "royalblue"},
-            "steps": [
-            {"range": [0, 40], "color": "#ffcccc"},
-            {"range": [40, 70], "color": "#fff2cc"},
-            {"range": [70, 100], "color": "#d9ead3"},
-            ],
-            },
-            )
-            )
-            st.plotly_chart(gauge, use_container_width=True)
-            st.markdown("---")
-            st.subheader("📊 AI Transformation Metrics")
 
-            chart_data = pd.DataFrame({
+        gauge = go.Figure(
+            go.Indicator(
+                mode="gauge+number",
+                value=readiness_score,
+                title={"text": "AI Readiness Score"},
+                gauge={
+                    "axis": {"range": [0, 100]},
+                    "bar": {"color": "royalblue"},
+                    "steps": [
+                        {"range": [0, 40], "color": "#ffcccc"},
+                        {"range": [40, 70], "color": "#fff2cc"},
+                        {"range": [70, 100], "color": "#d9ead3"},
+                    ],
+                },
+            )
+        )
+
+        st.plotly_chart(gauge, use_container_width=True)
+        st.markdown("---")
+        st.subheader("📊 AI Transformation Metrics")
+
+        chart_data = pd.DataFrame({
             "Category": [
-            "Current Efficiency",
-            "After AI",
-            "Customer Satisfaction",
-            "Automation",
-            "Decision Speed"
+                "Current Efficiency",
+                "After AI",
+                "Customer Satisfaction",
+                "Automation",
+                "Decision Speed"
             ],
             "Score": [
-            45,
-            85,
-            90,
-            80,
-            88
+                45,
+                85,
+                90,
+                80,
+                88
             ]
-            })
+        })
 
-            st.bar_chart(
+        st.bar_chart(
             chart_data.set_index("Category")
-            )
+        )
 
-            st.markdown("---")
+        st.markdown("---")
 
