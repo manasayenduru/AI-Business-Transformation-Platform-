@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from google import genai
+import google.genai as genai
 from dotenv import load_dotenv
 import pandas as pd
 import plotly.express as px
