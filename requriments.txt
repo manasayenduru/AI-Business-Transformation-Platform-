@@ -1,6 +1,5 @@
-streamlit>=1.46.0
-requests>=2.31.0
-pandas>=2.2.2
-plotly>=5.24.1
-reportlab>=4.2.2
-
+streamlit
+requests
+pandas
+plotly
+reportlab
