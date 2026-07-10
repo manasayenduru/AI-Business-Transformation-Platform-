@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from google import genai
+import requests
 from dotenv import load_dotenv
 import pandas as pd
 import plotly.express as px
@@ -363,7 +363,6 @@ if generate:
         with col6:
             st.metric("Primary Business Goal", business_goal)
 
-        client = genai.Client(api_key=api_key) 
 
         prompt = f"""
 You are a professional AI Business Transformation Consultant.
@@ -417,66 +416,90 @@ Give a concise executive-style recommendation.
 """
 
         with st.spinner("Generating AI consulting report..."):
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=prompt,
-            )
-        st.success("AI consulting report generated successfully.")
-        st.markdown(response.text)
-        pdf_file = create_pdf(
-            response.text,
+            url = (
+                "https://generativelanguage.googleapis.com/v1beta/"
+                "models/gemini-2.5-flash:generateContent"
+    )
+
+    api_response = requests.post(
+        url,
+        headers={
+            "x-goog-api-key": api_key,
+            "Content-Type": "application/json",
+    },
+    json={
+         "contents": [
+         {
+              "parts": [
+                 {"text": prompt}
+               ]
+         }
+         ]
+        },
+        timeout=120,
+    )
+
+    api_response.raise_for_status()
+    result = api_response.json()
+
+    response_text = result["candidates"][0]["content"]["parts"][0]["text"]
+
+    st.success("AI consulting report generated successfully.")
+    st.markdown(response_text)
+    pdf_file = create_pdf(
+            response_text,
             readiness_score,
             estimated_roi,
             estimated_savings,
             timeline
         )
-        with open(pdf_file, "rb") as pdf:
+    with open(pdf_file, "rb") as pdf:
             st.download_button(
                 label="📄 Download Executive PDF Report",
                 data=pdf.read(),
                 file_name="AI_Consulting_Report.pdf",
                 mime="application/pdf"
             )
-        gauge = go.Figure(
-        go.Indicator(
-        mode="gauge+number",
-        value=readiness_score,
-        title={"text": "AI Readiness Score"},
-        gauge={
-        "axis": {"range": [0, 100]},
-        "bar": {"color": "royalblue"},
-        "steps": [
-        {"range": [0, 40], "color": "#ffcccc"},
-        {"range": [40, 70], "color": "#fff2cc"},
-        {"range": [70, 100], "color": "#d9ead3"},
-        ],
-        },
-        )
-        )
-        st.plotly_chart(gauge, use_container_width=True)
-        st.markdown("---")
-        st.subheader("📊 AI Transformation Metrics")
+            gauge = go.Figure(
+            go.Indicator(
+            mode="gauge+number",
+            value=readiness_score,
+            title={"text": "AI Readiness Score"},
+            gauge={
+            "axis": {"range": [0, 100]},
+            "bar": {"color": "royalblue"},
+            "steps": [
+            {"range": [0, 40], "color": "#ffcccc"},
+            {"range": [40, 70], "color": "#fff2cc"},
+            {"range": [70, 100], "color": "#d9ead3"},
+            ],
+            },
+            )
+            )
+            st.plotly_chart(gauge, use_container_width=True)
+            st.markdown("---")
+            st.subheader("📊 AI Transformation Metrics")
 
-        chart_data = pd.DataFrame({
-        "Category": [
-        "Current Efficiency",
-        "After AI",
-        "Customer Satisfaction",
-        "Automation",
-        "Decision Speed"
-        ],
-        "Score": [
-        45,
-        85,
-        90,
-        80,
-        88
-        ]
-        })
+            chart_data = pd.DataFrame({
+            "Category": [
+            "Current Efficiency",
+            "After AI",
+            "Customer Satisfaction",
+            "Automation",
+            "Decision Speed"
+            ],
+            "Score": [
+            45,
+            85,
+            90,
+            80,
+            88
+            ]
+            })
 
-        st.bar_chart(
-        chart_data.set_index("Category")
-        )
+            st.bar_chart(
+            chart_data.set_index("Category")
+            )
 
-        st.markdown("---")
+            st.markdown("---")
 
