@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 import pandas as pd
 import plotly.express as px
@@ -363,8 +363,7 @@ if generate:
         with col6:
             st.metric("Primary Business Goal", business_goal)
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-3.1-flash-lite")
+        client = genai.Client(api_key=api_key) 
 
         prompt = f"""
 You are a professional AI Business Transformation Consultant.
@@ -418,8 +417,10 @@ Give a concise executive-style recommendation.
 """
 
         with st.spinner("Generating AI consulting report..."):
-            response = model.generate_content(prompt)
-
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+            )
         st.success("AI consulting report generated successfully.")
         st.markdown(response.text)
         pdf_file = create_pdf(
