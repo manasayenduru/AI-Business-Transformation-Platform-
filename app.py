@@ -1,7 +1,6 @@
 import os
 import streamlit as st
 import requests
-from dotenv import load_dotenv
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -19,7 +18,6 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from datetime import datetime
 
-load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
 st.set_page_config(
