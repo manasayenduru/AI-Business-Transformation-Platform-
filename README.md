@@ -8,6 +8,47 @@ The platform uses Google Gemini to analyze business challenges and produce execu
 
 [Open the AI Business Transformation Platform](https://ai-consultant-v.streamlit.app)
 
+## 📸 Application Screenshots
+
+### 1. 🏠 Home Page
+
+The main dashboard where users provide their business information and AI transformation goals.
+
+![Home Page](assets/01-home-page.png)
+
+---
+
+### 2. 📊 KPI & Success Measures
+
+Displays AI readiness score, estimated annual savings, implementation timeline, and key performance indicators.
+
+![KPI Dashboard](assets/02-kpi-dashboard.png)
+
+---
+
+### 3. 💰 ROI & Business Impact
+
+Visualizes estimated ROI, financial impact, implementation effort, and expected business outcomes.
+
+![ROI & Business Impact](assets/03-roi-business-impact.png)
+
+---
+
+### 4. 🤖 Executive Recommendations
+
+Shows AI-generated executive recommendations tailored to the organization's business challenge.
+
+![Executive Recommendations](assets/04-executive-recommendations.png)
+
+---
+
+### 5. 📄 Downloadable Executive Report
+
+Demonstrates the professionally formatted PDF report that users can download and share with stakeholders.
+
+![Executive Report](assets/05-report-download.png)
+
+
 ## 📌 Project Overview
 
 Many organizations want to adopt artificial intelligence but are unsure where to begin, which business processes to prioritize, and what benefits they may achieve.
